@@ -111,7 +111,7 @@ sub dispatch {
 sub tt2 {
   my $self = shift;
   my $tt2  = shift;
-  if (defined($tt2) {
+  if (defined($tt2)) {
     $TT2 = $tt2;
   } else {
     return $TT2;

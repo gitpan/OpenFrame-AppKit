@@ -3,7 +3,7 @@ package OpenFrame::AppKit::App;
 use strict;
 use warnings::register;
 
-our $VERSION = '3.00';
+our $VERSION = '3.01';
 
 use Storable qw ( dclone );
 use Pipeline::Segment;

@@ -5,7 +5,7 @@ use OpenFrame::AppKit::Session;
 use OpenFrame::AppKit::Segment::TT2;
 use OpenFrame::AppKit::Segment::SessionLoader;
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 1;
 
