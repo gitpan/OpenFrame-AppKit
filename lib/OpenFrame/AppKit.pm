@@ -2,12 +2,16 @@ package OpenFrame::AppKit;
 
 use OpenFrame::AppKit::App;
 use OpenFrame::AppKit::Session;
-use OpenFrame::AppKit::Segment::TT2;
+use OpenFrame::AppKit::Segment::Images;
+use OpenFrame::AppKit::Segment::LogFile;
 use OpenFrame::AppKit::Segment::SessionLoader;
+use OpenFrame::AppKit::Segment::TT2;
 
-our $VERSION = '1.01';
+our $VERSION = '1.03';
 
 1;
+
+__END__
 
 =head1 NAME
 
@@ -36,13 +40,21 @@ Base application class for OpenFrame::AppKit
 
 Sessions for OpenFrame::AppKit
 
-=item * OpenFrame::AppKit::Segment::TT2
+=item * OpenFrame::AppKit::Segment::Images
 
-A Template Toolkit template engine for OpenFrame::AppKit
+Static images handler for OpenFrame::AppKit
+
+=item * OpenFrame::AppKit::Segment::LogFile
+
+Simple logger for OpenFrame::AppKit
 
 =item * OpenFrame::AppKit::Segment::SessionLoader
 
 A session management segment for OpenFrame::AppKit
+
+=item * OpenFrame::AppKit::Segment::TT2
+
+A Template Toolkit template engine for OpenFrame::AppKit
 
 =back
 

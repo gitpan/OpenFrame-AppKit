@@ -8,6 +8,8 @@ use File::Spec;
 use Pipeline::Segment;
 use OpenFrame::Response;
 
+our $VERSION = '3.02';
+
 use base qw ( Pipeline::Segment );
 
 my $TT2 = Template->new();

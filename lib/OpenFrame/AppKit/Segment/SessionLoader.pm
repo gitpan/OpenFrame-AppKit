@@ -4,7 +4,11 @@ use strict;
 use warnings::register;
 
 use Pipeline::Segment;
+use OpenFrame::Cookie;
+use OpenFrame::Cookies;
 use OpenFrame::AppKit::Session;
+
+our $VERSION = '3.02';
 
 use base qw ( Pipeline::Segment );
 
@@ -12,14 +16,18 @@ sub dispatch {
   my $self = shift;
   my $pipe = shift;
 
-  my $session;
+  my ($session, $id);
  
   ## get the cookie container
   my $cookies = $pipe->store->get('OpenFrame::Cookies');
   ## get the session cookie
-  my $scookie = $cookies->get('session');
-  ## get the value of the session cookie
-  my $id = $scookie->value() if $scookie;
+  if ( $cookies ) {
+    my $scookie = $cookies->get('session');
+    ## get the value of the session cookie
+    $id = $scookie->value() if $scookie;
+  } else {
+    $pipe->store->set( OpenFrame::Cookies->new() );
+  }
 
   ## if all that has left us with an id, we have a session to fetch
   if ($id) {

@@ -4,17 +4,16 @@
 ## simple openframe server
 ##
 
-use lib './lib', '../openframe3/lib';
+use lib './lib', '../openframe3/lib', '../pipeline2/lib';
 use strict;
 use warnings;
 
 use Pipeline;
 use HTTP::Daemon;
 use OpenFrame::AppKit;
-use OpenFrame::AppKit::App::NameForm;
 use OpenFrame::Segment::HTTP::Request;
 use OpenFrame::AppKit::Examples::Hangman;
-use OpenFrame::AppKit::Segment::LogFile;
+use OpenFrame::AppKit::Examples::NameForm;
 
 my $d = HTTP::Daemon->new( LocalPort => '8080', Reuse => 1);
 die $! unless $d;
@@ -33,24 +32,36 @@ while(my $c = $d->accept()) {
     ##
     my $http_request   = OpenFrame::Segment::HTTP::Request->new();
 
-    my $logger         = OpenFrame::AppKit::Segment::LogFile->new();
+    my $image_loader = OpenFrame::AppKit::Segment::Images->new()
+                                                         ->directory("./templates");
 
-    my $name_form      = OpenFrame::AppKit::App::NameForm->new()
-                                                         ->uri( '\/(index\.html|)$' )
+    my $session_loader = OpenFrame::AppKit::Segment::SessionLoader->new();
+
+    my $name_form      = OpenFrame::AppKit::Examples::NameForm->new()
+                                                         ->uri( qr:/(index\.html|)$: )
 							 ->namespace( 'nameform' );
 
     my $hangman        = OpenFrame::AppKit::Examples::Hangman->new()
 	                                                     ->uri( '/hangman' )
 							     ->namespace( 'hangman' )
 							     ->wordlist( './words.txt' );
-    my $session_loader = OpenFrame::AppKit::Segment::SessionLoader->new();
 
     my $content_loader = OpenFrame::AppKit::Segment::TT2->new()
                                                         ->directory("./templates");
 
+    my $logger         = OpenFrame::AppKit::Segment::LogFile->new();
+
+
+    # Do we want lots of debugging?
+    foreach my $slot ($http_request, $image_loader, $session_loader, $name_form,
+                      $hangman, $content_loader, $logger) {
+#      $slot->debug(10);
+    }
+
     ## order is important here.
     $pipeline->add_segment(
 			   $http_request,
+			   $image_loader,
 			   $session_loader,
 			   $name_form,
 			   $hangman,

@@ -1,0 +1,19 @@
+Changes file for OpenFrame::AppKit:
+
+1.03
+	- added Andrew Ford's patch to have state settings in
+	  entry_points
+	- various bug fixes
+	- much better test coverage
+
+1.02
+	- now supports parameters with existing-but-0 value
+
+1.01
+	- renamed OpenFrame::AppKit::App::NameForm to
+	  OpenFrame::AppKit::Examples::NameForm
+	- new OpenFrame::AppKit::Segment::Images
+	- documentation updates
+
+1.00 ?
+	- released to CPAN
