@@ -1,5 +1,13 @@
 Changes file for OpenFrame::AppKit:
 
+3.03
+	  - bumped up version to 3.03 because some of the module
+    	    versions were retrograding.  It was becoming a bit of
+    	    a pain, and was far easier to make everything higher than
+      	    the highest version of any module.  Pointed out by
+    	    Randal Schwartz.
+  	  - Added Pipeline-3.01 to dependencies.
+
 1.04 (NOT RELEASED YET)
 	- added OpenFrame::AppKit::Segment::DispatchOnURI, which allows
 	  standard segments to be handle uri information rather than

@@ -8,7 +8,7 @@ use File::Spec;
 use Pipeline::Segment;
 use OpenFrame::Response;
 
-our $VERSION = 1.05;
+our $VERSION=3.03;
 
 use base qw ( Pipeline::Segment );
 
@@ -60,7 +60,7 @@ sub dispatch {
 			  The file $path was not found.
 			  </p>
 			  <hr>
-			  <i>$date, OpenFrame $OpenFrame::VERSION (AppKit $OpenFrame::AppKit::VERSION)</i>
+			  <i>$date, OpenFrame $OpenFrame::VERSION=3.03;
 			  </body>
 			  </html>
 			}
@@ -91,7 +91,7 @@ sub dispatch {
 			    You aren't allowed to access the file $path
 			    </p>
 			    <hr>
-			    <i>$date, OpenFrame $OpenFrame::VERSION (AppKit $OpenFrame::AppKit::VERSION)</i>
+			    <i>$date, OpenFrame $OpenFrame::VERSION=3.03;
 			    </body>
 			    </html>
 			   } #'}

@@ -2,7 +2,7 @@
 
 use lib './lib', '../openframe3/lib','../pipeline2/lib';
 use strict;
-use Test::Simple tests => 11;
+use Test::More no_plan => 1;
 
 package MyApp;
 
@@ -34,18 +34,22 @@ sub default {
 
 sub handler_a {
   main::ok(1, "reached handler_a");
+  return bless {}, 'This';
 }
 
 sub handler_b {
   main::ok(1, "reached handler_b");
+  1;
 }
 
 sub handler_c {
   main::ok(1, "reached handler_c");
+  1;
 }
 
 sub handler_d {
   main::ok(0, "should never have reached this point");
+  1;
 }
 
 package main;

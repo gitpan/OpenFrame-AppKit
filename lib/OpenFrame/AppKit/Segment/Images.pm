@@ -9,7 +9,7 @@ use File::Spec;
 use Pipeline::Segment;
 use OpenFrame::Response;
 
-our $VERSION = 1.05;
+our $VERSION=3.03;
 use base qw ( Pipeline::Segment );
 
 sub directory {

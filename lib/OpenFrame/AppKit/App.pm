@@ -3,7 +3,7 @@ package OpenFrame::AppKit::App;
 use strict;
 use warnings::register;
 
-our $VERSION = 1.05;
+our $VERSION=3.03;
 
 use Storable qw ( dclone );
 use OpenFrame::AppKit::Segment::DispatchOnURI;

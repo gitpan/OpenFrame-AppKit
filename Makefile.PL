@@ -12,7 +12,7 @@ EOF
 
 WriteMakefile(
 	      NAME => 'OpenFrame::AppKit',
-	      VERSION_FROM => 'lib/OpenFrame/AppKit.pm',
+	      VERSION_FROM => 'lib/OpenFrame/AppKit.pm', 
 	      PREREQ_PM => {
 			    'Test::More'       => '0.01',
 			    'Test::Simple'     => '0.01',
@@ -20,5 +20,6 @@ WriteMakefile(
 			    'Cache::Cache'     => '0.01',
 			    'Template'         => '0.01',
 			    'Games::GuessWord' => '0.01',
+          'Pipeline'         => '3.01',
 		    }
 	     );
