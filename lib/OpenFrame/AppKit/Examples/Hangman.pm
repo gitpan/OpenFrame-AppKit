@@ -8,7 +8,6 @@ use base qw(OpenFrame::AppKit::App);
 sub entry_points {
   return {
     guess => ['guess'],
-    clean => ['forcecleanup'],
   };
 }
 
@@ -36,11 +35,6 @@ sub default {
     $self->{guessed} = {};
   }
   return 1;
-}
-
-sub clean {
-  my $self = shift;
-  delete $self->{keys %$self}
 }
 
 sub guess {

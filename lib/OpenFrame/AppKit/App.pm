@@ -3,11 +3,11 @@ package OpenFrame::AppKit::App;
 use strict;
 use warnings::register;
 
-our $VERSION = '3.02';
+our $VERSION = 1.05;
 
 use Storable qw ( dclone );
-use Pipeline::Segment;
-use base qw ( Pipeline::Segment );
+use OpenFrame::AppKit::Segment::DispatchOnURI;
+use base qw ( OpenFrame::AppKit::Segment::DispatchOnURI );
 
 sub init {
   my $self = shift;
@@ -33,26 +33,26 @@ sub request {
   }
 }
 
-sub uri {
-  my $self     = shift;
-  my $pattern  = shift;
-  if ( defined( $pattern ) ) {
-    if( ref($pattern) ) {
-      $self->{'::appkit'}->{ execute_on_uris_matching } = $pattern;
-      return $self;
-    } else {
-      return $self->uri( qr/$pattern/ );
-    }
-  } else {
-    return $self->{'::appkit'}->{ execute_on_uris_matching };
-  }
-}
+#sub uri {
+#  my $self     = shift;
+#  my $pattern  = shift;
+#  if ( defined( $pattern ) ) {
+#    if( ref($pattern) ) {
+#      $self->{'::appkit'}->{ execute_on_uris_matching } = $pattern;
+#      return $self;
+#    } else {
+#      return $self->uri( qr/$pattern/ );
+#    }
+#  } else {
+#    return $self->{'::appkit'}->{ execute_on_uris_matching };
+#  }
+#}
 
 sub namespace {
   my $self = shift;
   my $ns   = shift;
   if (defined( $ns )) {
-    $self->{ ns } = $ns;
+    $self->{'::appkit'}{ ns } = $ns;
     return $self;
   } else {
     return $self->{'::appkit'}->{ns};
@@ -63,6 +63,9 @@ sub _copy_app_from_namespace {
   my $self = shift;
   my $session = shift;
   my $namespace = $self->namespace || '';
+
+  $self->emit("namespace is $namespace");
+  
   if ($session->{application}->{ $namespace }) {
     my $copy = dclone($session->{application}->{ $namespace });
     foreach my $key (keys %$copy) {
@@ -71,20 +74,14 @@ sub _copy_app_from_namespace {
   }
 }
 
-sub dispatch {
+sub dispatch_on_uri {
   my $self = shift;
   my $pipe = shift;
 
   my $store   = $pipe->store();
   my $request = $store->get('OpenFrame::Request');
 
-  if ($request->uri->path !~ $self->uri) {
-    return;
-  } else {
-    my $namespace = $self->namespace || 'unknown';
-    my $uri       = $self->uri || 'unknown';
-    $self->emit( 'uri matched for application ' . $namespace . '(' . $uri . ')');
-  }
+  if (!$request) { return undef; }
 
   my $session = $self->get_session( $store );
   delete $session->{ app };
@@ -98,8 +95,9 @@ sub dispatch {
   $self->request('');         ## clear the request
 
   my $namespace = $self->namespace || '';
-  $session->{app}                         = $self;
-  $session->{application}->{ $namespace } = $self;
+  my %hashcopy  = %{$self};
+  $session->{app}                         = \%hashcopy;
+  $session->{application}->{ $namespace } = \%hashcopy;
 
   return @results;
 }
@@ -171,19 +169,39 @@ sub _match_hash_arguments {
   foreach my $wanted (@$against) {
     if (ref $wanted eq 'ARRAY') {
       my $wantarg =  $wanted->[0];
+      my $lnot    = 0;
+      if (substr($wantarg,0,1) eq '!') {
+	$wantarg = substr($wantarg, 1);
+	$lnot    = 1;
+      }
       if (exists $args->{ $wantarg }) {
         my $argvalue = $args->{ $wantarg };
         foreach my $wantvalue (@$wanted[1..$#$wanted]) {
           if (ref $wantvalue eq 'Regexp') {
-            $match++, last if $argvalue =~ $wantvalue;
+	    if ($lnot) {
+	      $match--, last if $argvalue =~ $wantvalue;
+	    } else {
+	      $match++, last if $argvalue =~ $wantvalue;
+	    }
           }
           else {
-            $match++, last if $argvalue eq $wantvalue;
+	    if ($lnot) {
+	      $match--, last if $argvalue eq $wantvalue;
+	    } else {
+	      $match++, last if $argvalue eq $wantvalue;
+	    }
           }
         }
       }
     }
-    elsif (exists $args->{ $wanted }) {
+    elsif ( substr($wanted,0,1) eq '!') {
+      my $realwanted = substr($wanted, 1);
+      if (exists $args->{ $realwanted }) {
+	return 0;
+      } else {
+	$match++;
+      }
+    } elsif (exists $args->{ $wanted }) {
       $match++;
     } else {
       ## skip

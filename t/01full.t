@@ -8,16 +8,17 @@ use OpenFrame::Segment::HTTP::Request;
 use OpenFrame::AppKit::Examples::Hangman;
 use OpenFrame::AppKit::Examples::NameForm;
 use HTTP::Request;
-use Test::More tests => 23;
+use Test::More tests => 29;
 use URI;
 
 # Get the front page
 my $url = URI->new('http://localhost/');
-my $r = run(HTTP::Request->new(GET => $url));
+my($r, $s) = run(HTTP::Request->new(GET => $url));
 ok($r->is_success);
 is($r->headers->content_type, 'text/html');
 like($r->content, qr/Welcome to AppKit/);
 like($r->content, qr/What is your name/);
+is(ref($s), 'OpenFrame::AppKit::Session');
 
 # Grab the session id and give it back later on
 my $cookie = $r->headers->header('Set-Cookie');
@@ -28,40 +29,45 @@ $headers->header('Cookie' => "session=$id");
 
 # Put in the name
 $url->query_form(name => 'Leon');
-$r = run(HTTP::Request->new(GET => $url, $headers));
+($r, $s) = run(HTTP::Request->new(GET => $url, $headers));
 ok($r->is_success);
 is($r->headers->content_type, 'text/html');
 like($r->content, qr/Welcome to AppKit/);
 like($r->content, qr/Congratulations Leon/);
+is(ref($s), 'OpenFrame::AppKit::Session');
+is($s->{application}->{nameform}->{name}, 'Leon');
 
 # Get a 404
 $url = URI->new('http://localhost/xyzzy');
-$r = run(HTTP::Request->new(GET => $url));
+($r, $s) = run(HTTP::Request->new(GET => $url));
 is($r->code, 500);
 is($r->headers->content_type, 'text/html');
 like($r->content, qr/File Not Found/);
 
 # Get an image
 $url = URI->new('http://localhost/hangman/images/h0.gif');
-$r = run(HTTP::Request->new(GET => $url, $headers));
+($r, $s) = run(HTTP::Request->new(GET => $url, $headers));
 ok($r->is_success);
 is($r->headers->content_type, 'image/gif');
 
 # Get the front page of hangman
 $url = URI->new('http://localhost/hangman/');
-$r = run(HTTP::Request->new(GET => $url, $headers));
+($r, $s) = run(HTTP::Request->new(GET => $url, $headers));
 ok($r->is_success);
 is($r->headers->content_type, 'text/html');
 like($r->content, qr/Hangman/);
 like($r->content, qr{/hangman/images/h0.gif});
+is(ref($s), 'OpenFrame::AppKit::Session');
+is(ref($s->{application}->{hangman}), 'HASH');
 
 # Make a guess
 $url = URI->new('http://localhost/hangman/');
 $url->query_form(guess => 'E');
-$r = run(HTTP::Request->new(GET => $url, $headers));
+($r, $s) = run(HTTP::Request->new(GET => $url, $headers));
 ok($r->is_success);
 is($r->headers->content_type, 'text/html');
 like($r->content, qr/Hangman/);
+is(ref($s), 'OpenFrame::AppKit::Session');
 
 if ($r->content =~ qr/Chances: 5<br>/) {
   # We guessed wrongly
@@ -108,7 +114,7 @@ sub run {
 			 $content_loader,
 			);
 
-  $pipeline->add_cleanup( $logger );
+  $pipeline->cleanups->add_segment( $logger );
 
   ## create a new store
   my $store = Pipeline::Store::Simple->new();
@@ -119,9 +125,11 @@ sub run {
   ## dispatch the pipeline
   $pipeline->dispatch();
 
-  ## get the response out
+  ## get the response and session out
   my $response = $pipeline->store->get('HTTP::Response');
-  return $response;
+  my $session = $pipeline->store->get('OpenFrame::AppKit::Session');
+
+  return ($response, $session);
 }
 
 

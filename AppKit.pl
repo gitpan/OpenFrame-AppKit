@@ -4,7 +4,7 @@
 ## simple openframe server
 ##
 
-use lib './lib', '../openframe3/lib', '../pipeline2/lib';
+use lib './lib', '../openframe3/lib';
 use strict;
 use warnings;
 
@@ -25,38 +25,26 @@ while(my $c = $d->accept()) {
   ## get requests of the connection
   while(my $r = $c->get_request) {
     ## create a new Pipeline object
-    my $pipeline = Pipeline->new();
+    my $pipeline = Pipeline->new()->debug(1);
 
     ##
     ## create the segments
     ##
     my $http_request   = OpenFrame::Segment::HTTP::Request->new();
-
     my $image_loader = OpenFrame::AppKit::Segment::Images->new()
                                                          ->directory("./templates");
-
     my $session_loader = OpenFrame::AppKit::Segment::SessionLoader->new();
-
     my $name_form      = OpenFrame::AppKit::Examples::NameForm->new()
-                                                         ->uri( qr:/(index\.html|)$: )
-							 ->namespace( 'nameform' );
-
+                                                              ->uri( qr:/(index\.html|)$: )
+							                                                ->namespace( 'nameform' );
     my $hangman        = OpenFrame::AppKit::Examples::Hangman->new()
 	                                                     ->uri( '/hangman' )
-							     ->namespace( 'hangman' )
-							     ->wordlist( './words.txt' );
-
+                                    							     ->namespace( 'hangman' )
+                                    							     ->wordlist( './words.txt' );
     my $content_loader = OpenFrame::AppKit::Segment::TT2->new()
                                                         ->directory("./templates");
-
     my $logger         = OpenFrame::AppKit::Segment::LogFile->new();
 
-
-    # Do we want lots of debugging?
-    foreach my $slot ($http_request, $image_loader, $session_loader, $name_form,
-                      $hangman, $content_loader, $logger) {
-#      $slot->debug(10);
-    }
 
     ## order is important here.
     $pipeline->add_segment(
@@ -68,7 +56,7 @@ while(my $c = $d->accept()) {
 			   $content_loader,
 			  );
 
-    $pipeline->add_cleanup( $logger );
+    $pipeline->cleanups->add_segment( $logger );
 
     ## create a new store
     my $store = Pipeline::Store::Simple->new();

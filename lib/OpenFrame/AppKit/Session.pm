@@ -6,7 +6,7 @@ use warnings::register;
 use Cache::FileCache;
 use Digest::MD5 qw(md5_hex);
 
-our $VERSION = '3.02';
+our $VERSION = 1.05;
 
 sub new {
   my $class = shift;

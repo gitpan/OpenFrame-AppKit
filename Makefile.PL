@@ -14,10 +14,11 @@ WriteMakefile(
 	      NAME => 'OpenFrame::AppKit',
 	      VERSION_FROM => 'lib/OpenFrame/AppKit.pm',
 	      PREREQ_PM => {
-			    'Test::More'   => '0.01',
-			    'Test::Simple' => '0.01',
-			    'OpenFrame'    => '3.00',
-			    'Cache::Cache' => '0.01',
-			    'Template'     => '0.01',
+			    'Test::More'       => '0.01',
+			    'Test::Simple'     => '0.01',
+			    'OpenFrame'        => '3.00',
+			    'Cache::Cache'     => '0.01',
+			    'Template'         => '0.01',
+			    'Games::GuessWord' => '0.01',
 		    }
 	     );

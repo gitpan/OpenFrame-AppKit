@@ -8,7 +8,7 @@ use OpenFrame::Cookie;
 use OpenFrame::Cookies;
 use OpenFrame::AppKit::Session;
 
-our $VERSION = '3.02';
+our $VERSION = 1.05;
 
 use base qw ( Pipeline::Segment );
 

@@ -7,7 +7,7 @@ use OpenFrame::AppKit::Segment::LogFile;
 use OpenFrame::AppKit::Segment::SessionLoader;
 use OpenFrame::AppKit::Segment::TT2;
 
-our $VERSION = '1.03';
+our $VERSION = 1.05;
 
 1;
 
